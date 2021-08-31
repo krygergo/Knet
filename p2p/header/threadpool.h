@@ -28,8 +28,8 @@ struct thread_pool {
 };
 
 struct thread_pool thread_pool_create( int size );
-int thread_pool_start( struct thread_pool *threadPool );
+void thread_pool_start( struct thread_pool *threadPoolPointer );
 void thread_pool_add_job( struct thread_pool *threadPoolPointer, void *(*function)(void *), void *arg );
-int thread_pool_destroy( struct thread_pool threadPool );
+void thread_pool_destroy( struct thread_pool threadPool );
 
 #endif // KNET_THREADPOOL_H

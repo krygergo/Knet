@@ -18,9 +18,9 @@ static void *thread_start( void *arg ) {
     struct thread_pool *threadPoolPointer = (struct thread_pool *) arg;
     while( !threadPoolPointer->stop ) {
         pthread_mutex_lock( &threadPoolPointer->mutex );
-        while( threadPoolPointer->jobQueue.size == 0 && !threadPoolPointer->stop )
+        while( threadPoolPointer->jobQueue.size == 0 && !threadPoolPointer->stop ) {
             pthread_cond_wait( &threadPoolPointer->cond, &threadPoolPointer->mutex );
-        
+        }
         if( threadPoolPointer->jobQueue.size > 0 && !threadPoolPointer->stop ) {
             struct job *job = job_queue_pop_first( &threadPoolPointer->jobQueue );
             pthread_mutex_unlock( &threadPoolPointer->mutex );        
@@ -53,11 +53,10 @@ struct thread_pool thread_pool_create( int size ) {
     };
 }
 
-int thread_pool_start( struct thread_pool *threadPool ) {
-    for( int i = 0; i < threadPool->size; i++ ) {
-        pthread_create( &threadPool->threads[i], NULL, thread_start, threadPool );
+void thread_pool_start( struct thread_pool *threadPoolPointer ) {
+    for( int i = 0; i < threadPoolPointer->size; i++ ) {
+        pthread_create( &threadPoolPointer->threads[i], NULL, thread_start, threadPoolPointer );
     }
-    return 0;
 }
 
 static void job_queue_push_last( struct job_queue *jobQueuePointer, struct job *jobPointer, pthread_mutex_t *mutex ) {
@@ -82,12 +81,11 @@ void thread_pool_add_job( struct thread_pool *threadPoolPointer, void *(*functio
     pthread_cond_signal( &threadPoolPointer->cond );
 }
 
-int thread_pool_destroy( struct thread_pool threadPool ) {
+void thread_pool_destroy( struct thread_pool threadPool ) {
     for( int i = 0; i < threadPool.size; i++ ) {
         pthread_join( threadPool.threads[i], NULL );
     }
     pthread_mutex_destroy( &threadPool.mutex );
     pthread_cond_destroy( &threadPool.cond );
     free( threadPool.threads );
-    return 0;
 }

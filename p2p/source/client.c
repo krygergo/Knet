@@ -7,8 +7,13 @@
 
 int client_start( struct client client ) {
     char messageBuffer[MESSAGE_SIZE];
-    while( read( client.server[READ], messageBuffer, MESSAGE_SIZE ) >= 0 ) {
-        printf("%s", messageBuffer );
+    while( scanf( "%s", messageBuffer ) >= 0 ) {
+        if( string_equals( messageBuffer, "stop") ) {
+            write( client.server[WRITE], messageBuffer, MESSAGE_SIZE );
+        } else {
+            read( client.server[READ], messageBuffer, MESSAGE_SIZE );
+            printf("%s", messageBuffer );
+        }
     }
     return 0;
 }

@@ -1,12 +1,12 @@
 #ifndef KNET_SERVER_H
 #define KNET_SERVER_H
 
+#include "node.h"
 #include "../util.h"
 
 struct server {
+    struct node_info nodeInfo;
     int client[2];
-    int threadQuantity;
-    int port;
 };
 
 struct socket_communication {
